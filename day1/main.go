@@ -14,7 +14,7 @@ func check(e error) {
 }
 
 func main(){
-	data, err := ioutil.ReadFile("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/d1p1/input.txt")
+	data, err := ioutil.ReadFile("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/day1/input.txt")
 	check(err)
 
 	lines := strings.Split(string(data), "\n")
@@ -32,10 +32,6 @@ func main(){
 	}
 
 	for i, _ := range allNums {
-		if i < 3 {
-			continue
-		}
-
 		if i > 3 {
 			firstCurrentIndex := i - 3
 			firstPrevIndex := i - 4
