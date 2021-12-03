@@ -2,20 +2,15 @@ package main
 
 import (
 	"fmt"
+	"github.com/burybind/adventofcode2021"
 	"io/ioutil"
 	"strconv"
 	"strings"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main(){
 	data, err := ioutil.ReadFile("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/day1/input.txt")
-	check(err)
+	adventofcode2021.Check(err)
 
 	lines := strings.Split(string(data), "\n")
 	increases := 0
@@ -26,7 +21,7 @@ func main(){
 			continue
 		}
 		currNum, err := strconv.Atoi(line)
-		check(err)
+		adventofcode2021.Check(err)
 
 		allNums = append(allNums, currNum)
 	}
