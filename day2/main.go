@@ -14,8 +14,47 @@ func main(){
 
 	lines := strings.Split(string(data), "\n")
 
-	gamma := [12]float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	epsilon := [12]float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	mostLines := lines
+	leastLines := lines
+
+	index := 0
+	for len(mostLines) > 1 {
+		most, _ := mostAndLeastCommonBitAtIndex(mostLines, index)
+		mostLines = filterOutNonMatches(mostLines, strconv.Itoa(most), index)
+		index++
+	}
+
+	index = 0
+	for len(leastLines) > 1 {
+		_, least := mostAndLeastCommonBitAtIndex(leastLines, index)
+		leastLines = filterOutNonMatches(leastLines, strconv.Itoa(least), index)
+		index++
+	}
+
+	fmt.Printf("most lines: %v\n", mostLines)
+	fmt.Printf("least lines: %v\n", leastLines)
+
+	oxygenRating, scrubberRating := binaryToInt(mostLines[0]), binaryToInt(leastLines[0])
+	fmt.Printf("oxygen: %v\n", oxygenRating)
+	fmt.Printf("scrubber: %v\n", scrubberRating)
+}
+
+func filterOutNonMatches(lines []string, filter string, index int) []string {
+	filteredList := []string{}
+	for _, line := range lines {
+		if line == "" {
+			continue
+		}
+		if string(line[index]) == filter {
+			filteredList = append(filteredList, line)
+		}
+	}
+	return filteredList
+}
+
+func mostAndLeastCommonBitAtIndex(lines []string, index int) (int, int) {
+	gamma := [12]int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	epsilon := [12]int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 	linecount := float64(0)
 	for _, line := range lines {
@@ -25,12 +64,12 @@ func main(){
 		linecount++
 		for i := 0; i < len(line); i++ {
 			val, _ := strconv.Atoi(string(line[i]))
-			gamma[i] += float64(val)
+			gamma[i] += val
 		}
 	}
 
 	for i, f := range gamma {
-		avg := f/(linecount)
+		avg := float64(f)/(linecount)
 		if avg >= float64(0.5) {
 			gamma[i] = 1
 			epsilon[i] = 0
@@ -40,17 +79,10 @@ func main(){
 		}
 	}
 
+	return gamma[index], epsilon[index]
+}
 
-	fmt.Printf("gamma:   %v\n", gamma)
-	fmt.Printf("epsilon: %v\n", epsilon)
-
-	gammaStr := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(gamma)), ""), "[]")
-	epsilonStr := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(epsilon)), ""), "[]")
-	fmt.Printf("gammaStr:   %v\n", gammaStr)
-	fmt.Printf("epsilonStr: %v\n", epsilonStr)
-
-	gammaInt, _ := strconv.ParseInt(gammaStr, 2, 64)
-	fmt.Printf("gammaInt: %v\n", gammaInt)
-	epsilonInt, _ := strconv.ParseInt(epsilonStr, 2, 64)
-	fmt.Printf("gammaInt: %v\n", epsilonInt)
+func binaryToInt(val string) int64 {
+	gammaInt, _ := strconv.ParseInt(val, 2, 64)
+	return gammaInt
 }
