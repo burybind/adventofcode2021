@@ -26,7 +26,7 @@ func main(){
 		allNums = append(allNums, currNum)
 	}
 
-	for i, _ := range allNums {
+	for i := range allNums {
 		if i > 3 {
 			firstCurrentIndex := i - 3
 			firstPrevIndex := i - 4

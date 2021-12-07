@@ -10,12 +10,14 @@ import (
 	"strings"
 )
 
-type hasBeenCalled bool
-type bingoCard [5]bingoRow
+type bingoCard struct {
+	card   [5]bingoRow
+	hasWon bool
+}
 type bingoRow []*slot
 type slot struct {
-	num int
-	hasBeenCalled
+	num           int
+	hasBeenCalled bool
 }
 
 func main() {
@@ -34,14 +36,32 @@ func main() {
 	var cardWithBingo *bingoCard
 	for i, num := range calledNums {
 		markUpAllBingoCards(bingoCards, num)
-		cardWithBingo = checkForBingos(bingoCards)
-		if cardWithBingo != nil {
+		checkForBingos(bingoCards)
+		cardsleft := getCardsLeft(bingoCards)
+		if len(cardsleft) == 1 {
+			cardWithBingo = cardsleft[0]
+			continue
+		}
+		if len(cardsleft) == 0 {
 			sum := cardWithBingo.sumAllUnMarked()
 			product := sum * num
 			fmt.Printf("winning card won in %d steps. Unmarked sum: %d. Last called num: %d. Product: %d\n", i, sum, num, product)
 			break
 		}
 	}
+}
+
+func getCardsLeft(bingoCards []*bingoCard) []*bingoCard {
+	var cardsLeft []*bingoCard
+	for _, card := range bingoCards {
+		if card == nil {
+			continue
+		}
+		if !card.hasWon {
+			cardsLeft = append(cardsLeft, card)
+		}
+	}
+	return cardsLeft
 }
 
 func getDrawnNumbers(scanner *bufio.Scanner) []int {
@@ -93,7 +113,7 @@ func getBingoCards(scanner *bufio.Scanner) []*bingoCard {
 			i = 0
 			continue
 		}
-		card[i] = convertToBingoRow(txt)
+		card.card[i] = convertToBingoRow(txt)
 		i++
 	}
 
@@ -105,16 +125,15 @@ func getBingoCards(scanner *bufio.Scanner) []*bingoCard {
 	return bingoCards
 }
 
-func checkForBingos(cards []*bingoCard) *bingoCard {
+func checkForBingos(cards []*bingoCard) {
 	for _, card := range cards {
 		if card == nil {
 			continue
 		}
 		if card.hasRowBingo() || card.hasColumnBingo() {
-			return card
+			card.hasWon = true
 		}
 	}
-	return nil
 }
 
 func markUpAllBingoCards(cards []*bingoCard, num int) {
@@ -127,7 +146,7 @@ func markUpAllBingoCards(cards []*bingoCard, num int) {
 }
 
 func (c *bingoCard) markNumber(calledNum int) {
-	for _, row := range c {
+	for _, row := range c.card {
 		for _, s := range row {
 			if s.num == calledNum {
 				s.hasBeenCalled = true
@@ -138,7 +157,7 @@ func (c *bingoCard) markNumber(calledNum int) {
 }
 
 func (c *bingoCard) hasRowBingo() bool {
-	for _, row := range c {
+	for _, row := range c.card {
 		i := 0
 		for _, v := range row {
 			if v.hasBeenCalled {
@@ -154,7 +173,7 @@ func (c *bingoCard) hasRowBingo() bool {
 
 func (c *bingoCard) hasColumnBingo() bool {
 	for i := 0; i < 5; i++ {
-		if c[0][i].hasBeenCalled && c[1][i].hasBeenCalled && c[2][i].hasBeenCalled && c[3][i].hasBeenCalled && c[4][i].hasBeenCalled {
+		if c.card[0][i].hasBeenCalled && c.card[1][i].hasBeenCalled && c.card[2][i].hasBeenCalled && c.card[3][i].hasBeenCalled && c.card[4][i].hasBeenCalled {
 			return true
 		}
 	}
@@ -163,7 +182,7 @@ func (c *bingoCard) hasColumnBingo() bool {
 
 func (c *bingoCard) sumAllUnMarked() int {
 	var runningTotal int
-	for _, row := range c {
+	for _, row := range c.card {
 		for _, slot := range row {
 			if !slot.hasBeenCalled {
 				runningTotal += slot.num
