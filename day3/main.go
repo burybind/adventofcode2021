@@ -21,7 +21,7 @@ type slot struct {
 }
 
 func main() {
-	f, err := os.Open("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/day3/input.txt")
+	f, err := os.Open("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/day3/.input.txt")
 
 	if err != nil {
 		log.Fatal(err)

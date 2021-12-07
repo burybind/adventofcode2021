@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-func main(){
-	data, err := ioutil.ReadFile("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/day2/input.txt")
+func main() {
+	data, err := ioutil.ReadFile("/Users/brendan.ashton/go/src/github.com/burybind/adventofcode2021/day2/.input.txt")
 	adventofcode2021.Check(err)
 
 	lines := strings.Split(string(data), "\n")
@@ -69,7 +69,7 @@ func mostAndLeastCommonBitAtIndex(lines []string, index int) (int, int) {
 	}
 
 	for i, f := range gamma {
-		avg := float64(f)/(linecount)
+		avg := float64(f) / (linecount)
 		if avg >= float64(0.5) {
 			gamma[i] = 1
 			epsilon[i] = 0
